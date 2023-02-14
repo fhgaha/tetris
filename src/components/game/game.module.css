@@ -1,3 +1,16 @@
+.field::after {
+	content: "<!**********!>\A  \\/\\/\\/\\/\\/\\/";
+	white-space: pre;
+}
+
 .ul-field {
 	display: flex;
+}
+
+.ul-field::before {
+	content: "<!";
+}
+
+.ul-field::after {
+	content: "!>";
 }

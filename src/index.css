@@ -1,10 +1,5 @@
 @import-normalize;
 
-@font-face {
-	font-family: 'Hersheys';
-	src: local('Hersheys'), url('../assets/hersheys/Hursheys.ttf') format('truetype');
-}
-
 * {
 	margin: 0;
 	padding: 0;
