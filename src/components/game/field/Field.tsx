@@ -6,18 +6,9 @@ import useLoop from '../hooks/useLoop'
 const Field = () => {
   const field = useLoop()
 
-  const up: boolean = useKeyPress('ArrowUp')
-  const down: boolean = useKeyPress('ArrowDown')
-  const left: boolean = useKeyPress('ArrowLeft')
-  const right: boolean = useKeyPress('ArrowRight')
-
   return (
     <div className={st['game']}>
       <div className={st['field']}>
-        {/* {up && "U"}
-        {down && 'D'}
-        {left && 'L'}
-        {right && 'R'} */}
         {draw(field)}
       </div>
     </div>
