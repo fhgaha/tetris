@@ -1,5 +1,9 @@
+.field {
+	white-space: break-spaces;
+}
+
 .field::after {
-	content: "<!**********!>\A  \\/\\/\\/\\/\\/\\/";
+	content: "<!********************!> \A   \\/\\/\\/\\/\\/\\/\\/\\/\\/\\/";
 	white-space: pre;
 }
 
