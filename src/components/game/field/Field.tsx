@@ -1,18 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useKeyPress } from '../hooks/useKeyPress'
 import st from './field.module.css'
+import useLoop from '../hooks/useLoop'
 
 const Field = () => {
-  const width = 20
-  const height = 20
-
-  const [field, setField] = useState<number[][]>(
-    Array.from({ length: height }, () => Array<number>(width).fill(0))
-  )
-
-  useEffect(() => {
-    updateField(2, 3, 1, setField,)
-  }, [])
+  const field = useLoop()
 
   const up: boolean = useKeyPress('ArrowUp')
   const down: boolean = useKeyPress('ArrowDown')
@@ -26,7 +18,7 @@ const Field = () => {
         {down && 'D'}
         {left && 'L'}
         {right && 'R'} */}
-        {displayField(field)}
+        {draw(field)}
       </div>
     </div>
   )
@@ -34,16 +26,7 @@ const Field = () => {
 
 export default Field
 
-function updateField(row: number, col: number, value: number,
-  setField: React.Dispatch<React.SetStateAction<number[][]>>) {
-  setField(prevField => {
-    const newF = [...prevField]
-    newF[row][col] = value
-    return newF
-  })
-}
-
-function displayField(field: number[][]): React.ReactNode {
+function draw(field: number[][]): React.ReactNode {
   let result = field.map((rows, i) => (
     <ul className={st['ul-field']} key={'ul-' + i}>
       {rows.map((col, j) => (
@@ -52,7 +35,7 @@ function displayField(field: number[][]): React.ReactNode {
         </li>))}
     </ul>
   ))
-  console.log(result);
+  // console.log(result);
   return result
 }
 
