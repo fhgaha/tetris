@@ -83,8 +83,8 @@ export default function useLoop() {
 		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
 		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
 		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
-		let smthOnLeft = isWallReached
-		// || mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
+		let cellToLeftIsTaken = mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
+		let smthOnLeft = isWallReached || cellToLeftIsTaken
 		if (!smthOnLeft) {
 			for (let j = 0; j < cur.length; j++) {
 				const e = cur[j];
@@ -101,8 +101,8 @@ export default function useLoop() {
 		let mostRightColIndex = Math.max(...cur.map(el => el.col))
 		let mostRightCol = cur.filter(({ row, col }) => col == mostRightColIndex)
 		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
-		let smthOnRight = isWallReached
-		//|| mostRightCol.some(({ row, col }) => field[row][col + 1] == 1 
+		let cellToRightIsTaken = mostRightCol.some(({ row, col }) => field[row][col + 1] == 1)
+		let smthOnRight = isWallReached || cellToRightIsTaken
 		if (!smthOnRight) {
 			for (let j = 0; j < cur.length; j++) {
 				const e = cur[j];
@@ -127,7 +127,7 @@ export default function useLoop() {
 		} else {
 			setCurrentPiecePosition(new Array<{ row: number, col: number }>())
 		}
-	} 
+	}
 
 	function canMoveDown(positions: { row: any; col: any }[]) {
 		let lowestRowIndex = Math.max(...positions.map((el: { row: any }) => el.row))
