@@ -20,6 +20,7 @@ export default function useLoop() {
 	useEffect(() => {
 		// fillField(2, 2)
 		// fillField(2, 3)
+		fillCell(10, 5)
 		addPiece(Pieces.J, 3)
 	}, [])
 
@@ -27,7 +28,7 @@ export default function useLoop() {
 		for (let i = 0; i < piece.length; i++) {
 			const pieceRow = piece[i];
 			for (let j = 0; j < pieceRow.length; j++) {
-				updateField(i, j + startCol, piece[i][j])
+				updateCell(i, j + startCol, piece[i][j])
 				if (piece[i][j] == 1) {
 					let newOcc = occupied
 					newOcc.push({ row: i, col: j + startCol })
@@ -58,31 +59,43 @@ export default function useLoop() {
 
 	function moveAllDown() {
 		let tempOcc = occupied
-
-		for (let i = field.length - 2; i >= 0; i--) {
-			const _row = field[i]
-			for (let j = 0; j < _row.length; j++) {
-				let cellIsOccupied = occupied.find(({ row, col }) => (row == i && col == j)) != undefined
-				if (
-					// field[i][j] == 1 && field[i + 1][j] == 0
-					cellIsOccupied
-				) {
-					moveCellDown(i, j)
-
-					let newOcc = tempOcc.filter(({ row, col }) => !(row == i && col == j))
-					newOcc.push({ row: i + 1, col: j })
-					tempOcc = newOcc
-				}
+		let lowestRowIndex = getLowestRowIndex(tempOcc)
+		let lowestRow = tempOcc.filter(({ row, col }) => row == lowestRowIndex)
+		let filledBelow = lowestRow.some(({ row, col }) => field[row + 1][col] == 1)
+		if (!filledBelow) {
+			for (let i = 0; i < tempOcc.length; i++) {
+				let e = tempOcc[i]
+				tempOcc[i] = { row: e.row + 1, col: e.col }
+				emptyCell(e.row, e.col)
 			}
 		}
+		updateField(tempOcc, 1)
 		setOccupied(tempOcc)
 	}
 
-	function moveRowDown() {
-		for (let i = 0; i < field.length; i++) {
-			const row = field[i];
-
+	function isEmptyBelow(
+		occupied: { row: number, col: number }[],
+		field: number[][],
+		i: number, j: number
+	): boolean {
+		let lowestRowIndex = getLowestRowIndex(occupied)
+		let lowestRow = occupied.filter(({ row, col }) => row == lowestRowIndex)
+		if (!lowestRow.some(({ row, col }) => row == i && col == j)) {
+			return true
 		}
+		let isEmptyBelow = lowestRow.every(({ row, col }) => field[row + 1][col] == 0)
+		return isEmptyBelow
+	}
+
+	function getLowestRowIndex(array: { row: number; col: number }[]): number {
+		let lowestRowIndex = 0
+		for (let i = 0; i < array.length; i++) {
+			const element = array[i]
+			if (element.row > lowestRowIndex) {
+				lowestRowIndex = element.row
+			}
+		}
+		return lowestRowIndex
 	}
 
 	function moveCellDown(row: number, col: number): void {
@@ -91,17 +104,27 @@ export default function useLoop() {
 	}
 
 	function fillCell(row: number, col: number): void {
-		updateField(row, col, 1)
+		updateCell(row, col, 1)
 	}
 
 	function emptyCell(row: number, col: number) {
-		updateField(row, col, 0)
+		updateCell(row, col, 0)
 	}
 
-	function updateField(row: number, col: number, value: number) {
+	function updateCell(row: number, col: number, value: number) {
 		setField(() => {
 			const newF = [...field]
 			newF[row][col] = value
+			return newF
+		})
+	}
+
+	function updateField(array: { row: number, col: number }[], value: number) {
+		setField(() => {
+			const newF = [...field]
+			array.forEach(e => {
+				newF[e.row][e.col] = value
+			});
 			return newF
 		})
 	}
