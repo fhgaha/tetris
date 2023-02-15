@@ -22,7 +22,10 @@ function draw(field: number[][]): React.ReactNode {
     <ul className={st['ul-field']} key={'ul-' + i}>
       {rows.map((col, j) => (
         <li key={"li-" + j}>
-          {getSymbol(rows[j], j)}
+          {
+          // getSymbol(rows[j], j)
+          rows[j]
+          }
         </li>))}
     </ul>
   ))
