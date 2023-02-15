@@ -8,18 +8,17 @@ export default function useLoop() {
 	const height = 20
 	const [field, setField] = useState<number[][]>(
 		Array.from({ length: height }, () => Array<number>(width).fill(0)))
-	const [current, setCurrent] = useState(new Array<{ row: number, col: number }>())
+	const [currentPiecePosition, setCurrentPiecePosition] = useState(new Array<{ row: number, col: number }>())
 	const [direction, setDirection] = useState<string>("")
 
 	const up: boolean = useKeyPress('ArrowUp')
 	const down: boolean = useKeyPress('ArrowDown')
 	const left: boolean = useKeyPress('ArrowLeft')
 	const right: boolean = useKeyPress('ArrowRight')
-	{/* {up && "U"} */ }
 
 	useEffect(() => {
 		fillCell(10, 5)
-		addPiece(Pieces.J, 3)
+		addPiece(Pieces.T, 3)
 	}, [])
 
 	function addPiece(piece: number[][], startCol: number) {
@@ -28,9 +27,9 @@ export default function useLoop() {
 			for (let j = 0; j < pieceRow.length; j++) {
 				updateCell(i, j + startCol, piece[i][j])
 				if (piece[i][j] == 1) {
-					let newOcc = current
+					let newOcc = currentPiecePosition
 					newOcc.push({ row: i, col: j + startCol })
-					setCurrent(newOcc)
+					setCurrentPiecePosition(newOcc)
 				}
 			}
 		}
@@ -60,10 +59,9 @@ export default function useLoop() {
 
 		switch (direction) {
 			case "u":
-				console.log("u");
+				rotatePiece()
 				break;
 			case "d":
-				console.log("d");
 				break;
 			case "l":
 				movePieceLeft()
@@ -76,12 +74,17 @@ export default function useLoop() {
 		}
 	}
 
+	function rotatePiece() {
+
+	}
+
 	function movePieceLeft() {
-		let cur = current
+		let cur = currentPiecePosition
 		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
 		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
 		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
-		let smthOnLeft = isWallReached || mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
+		let smthOnLeft = isWallReached
+		// || mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
 		if (!smthOnLeft) {
 			for (let j = 0; j < cur.length; j++) {
 				const e = cur[j];
@@ -89,16 +92,17 @@ export default function useLoop() {
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrent(cur)
+			setCurrentPiecePosition(cur)
 		}
 	}
 
-	function movePieceRight() {
-		let cur = current
+	function movePieceRight(): void {
+		let cur = currentPiecePosition
 		let mostRightColIndex = Math.max(...cur.map(el => el.col))
 		let mostRightCol = cur.filter(({ row, col }) => col == mostRightColIndex)
 		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
-		let smthOnRight = isWallReached || mostRightCol.some(({ row, col }) => field[row][col + 1] == 1)
+		let smthOnRight = isWallReached
+		//|| mostRightCol.some(({ row, col }) => field[row][col + 1] == 1 
 		if (!smthOnRight) {
 			for (let j = 0; j < cur.length; j++) {
 				const e = cur[j];
@@ -106,26 +110,40 @@ export default function useLoop() {
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrent(cur)
+			setCurrentPiecePosition(cur)
 		}
 	}
 
-	function movePieceDown() {
-		let cur = current
-		let lowestRowIndex = Math.max(...cur.map(el => el.row))
-		let lowestRow = cur.filter(({ row, col }) => row == lowestRowIndex)
-		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row == height - 1
-		let smthBelow = isBottomReached || lowestRow.some(({ row, col }) => field[row + 1][col] == 1)
-		if (!smthBelow) {
+	function movePieceDown(): void {
+		let cur = currentPiecePosition
+		if (canMoveDown(cur)) {
 			for (let i = 0; i < cur.length; i++) {
 				let e = cur[i]
 				cur[i] = { row: e.row + 1, col: e.col }
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrent(cur)
+			setCurrentPiecePosition(cur)
 		} else {
-			setCurrent(new Array<{ row: number, col: number }>())
+			setCurrentPiecePosition(new Array<{ row: number, col: number }>())
+		}
+	} 
+
+	function canMoveDown(positions: { row: any; col: any }[]) {
+		let lowestRowIndex = Math.max(...positions.map((el: { row: any }) => el.row))
+		let lowestRow = positions.filter(({ row, col }) => row == lowestRowIndex)
+		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row == height - 1
+		let nextCellIsTakenAndDoesNotBelongToCur
+			= positions.some(
+				({ row, col }) => cellBelowIsOccupied(row, col) && !someCellsBelowBelongToCur(row, col)
+			)
+		return !(isBottomReached || nextCellIsTakenAndDoesNotBelongToCur)
+
+		function cellBelowIsOccupied(row: number, col: number): boolean {
+			return field[row + 1][col] == 1
+		}
+		function someCellsBelowBelongToCur(row: number, col: number): boolean {
+			return positions.some(e => e.row == row + 1 && e.col == col)
 		}
 	}
 
@@ -133,11 +151,11 @@ export default function useLoop() {
 		updateCell(row, col, 1)
 	}
 
-	function emptyCell(row: number, col: number) {
+	function emptyCell(row: number, col: number): void {
 		updateCell(row, col, 0)
 	}
 
-	function updateCell(row: number, col: number, value: number) {
+	function updateCell(row: number, col: number, value: number): void {
 		setField(() => {
 			const newF = [...field]
 			newF[row][col] = value
@@ -145,7 +163,7 @@ export default function useLoop() {
 		})
 	}
 
-	function updateField(array: { row: number, col: number }[], value: number) {
+	function updateField(array: { row: number, col: number }[], value: number): void {
 		setField(() => {
 			const newF = [...field]
 			array.forEach(e => {
