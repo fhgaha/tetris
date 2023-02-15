@@ -69,7 +69,7 @@ export default function useLoop() {
 				movePieceLeft()
 				break;
 			case "r":
-				console.log("r");
+				movePieceRight()
 				break;
 			default:
 				break;
@@ -80,8 +80,8 @@ export default function useLoop() {
 		let cur = current
 		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
 		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
-		let isWallMet = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
-		let smthOnLeft = isWallMet || mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
+		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
+		let smthOnLeft = isWallReached || mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
 		if (!smthOnLeft) {
 			for (let j = 0; j < cur.length; j++) {
 				const e = cur[j];
@@ -93,12 +93,30 @@ export default function useLoop() {
 		}
 	}
 
+	function movePieceRight() {
+		let cur = current
+		let mostRightColIndex = Math.max(...cur.map(el => el.col))
+		let mostRightCol = cur.filter(({ row, col }) => col == mostRightColIndex)
+		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
+		let smthOnRight = isWallReached || mostRightCol.some(({ row, col }) => field[row][col + 1] == 1)
+		if (!smthOnRight) {
+			for (let j = 0; j < cur.length; j++) {
+				const e = cur[j];
+				cur[j] = { row: e.row, col: e.col + 1 }
+				emptyCell(e.row, e.col)
+			}
+			updateField(cur, 1)
+			setCurrent(cur)
+		}
+	}
+
 	function movePieceDown() {
 		let cur = current
 		let lowestRowIndex = Math.max(...cur.map(el => el.row))
 		let lowestRow = cur.filter(({ row, col }) => row == lowestRowIndex)
-		let filledBelow = lowestRow.some(({ row, col }) => field[row + 1][col] == 1)
-		if (!filledBelow) {
+		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row == height - 1
+		let smthBelow = isBottomReached || lowestRow.some(({ row, col }) => field[row + 1][col] == 1)
+		if (!smthBelow) {
 			for (let i = 0; i < cur.length; i++) {
 				let e = cur[i]
 				cur[i] = { row: e.row + 1, col: e.col }
