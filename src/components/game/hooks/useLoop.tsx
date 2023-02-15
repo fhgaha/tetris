@@ -17,27 +17,28 @@ export default function useLoop() {
 	const right: boolean = useKeyPress('ArrowRight')
 
 	useEffect(() => {
-		fillCell(10, 5)
-		addPiece(Pieces.T, 3)
+		// fillCell(10, 5)
+		addPiece(Pieces.getRandom(), 3)
 	}, [])
 
 	function addPiece(piece: number[][], startCol: number) {
+		let newArr = new Array<{ row: number, col: number }>()
+
 		for (let i = 0; i < piece.length; i++) {
 			const pieceRow = piece[i];
 			for (let j = 0; j < pieceRow.length; j++) {
 				updateCell(i, j + startCol, piece[i][j])
 				if (piece[i][j] == 1) {
-					let newOcc = currentPiecePosition
-					newOcc.push({ row: i, col: j + startCol })
-					setCurrentPiecePosition(newOcc)
+					newArr.push({ row: i, col: j + startCol })
 				}
 			}
 		}
+		setCurrentPiecePosition(newArr)
 	}
 
 	useInterval(() => {
 		movePieceDown()
-	}, 1000)
+	}, 500)
 
 	useInterval(() => {
 		readInput()
@@ -78,7 +79,7 @@ export default function useLoop() {
 
 	}
 
-	function movePieceLeft() {
+	function movePieceLeft(): void {
 		let cur = currentPiecePosition
 		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
 		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
@@ -126,6 +127,7 @@ export default function useLoop() {
 			setCurrentPiecePosition(cur)
 		} else {
 			setCurrentPiecePosition(new Array<{ row: number, col: number }>())
+			addPiece(Pieces.getRandom(), 3)
 		}
 	}
 
@@ -140,7 +142,7 @@ export default function useLoop() {
 		return !(isBottomReached || nextCellIsTakenAndDoesNotBelongToCur)
 
 		function cellBelowIsOccupied(row: number, col: number): boolean {
-			return field[row + 1][col] == 1
+			return row != height - 1 && field[row + 1][col] == 1
 		}
 		function someCellsBelowBelongToCur(row: number, col: number): boolean {
 			return positions.some(e => e.row == row + 1 && e.col == col)
