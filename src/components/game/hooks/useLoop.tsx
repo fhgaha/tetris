@@ -35,7 +35,7 @@ export default function useLoop() {
 	}
 
 	useInterval(() => {
-		movePieceDown(1)
+			movePieceDown(1)
 	}, 500)
 
 	useInterval(() => {
@@ -73,7 +73,7 @@ export default function useLoop() {
 				rotatePiece()
 				break;
 			case "d":
-				movePieceDown(2)
+				movePieceDown(1)
 				break;
 			case "l":
 				movePieceLeft()
@@ -135,31 +135,37 @@ export default function useLoop() {
 					row: e.row + Math.min(amount, height - 1 - e.row),
 					col: e.col
 				}
+				console.log(Math.min(amount, height - 1 - e.row));
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
 			setCurrentPiece(cur)
 		} else {
-			addPiece(Pieces.getRandom(), 3)
+			// addPiece(Pieces.getRandom(), 3)
+			addPiece(Pieces.L, 3)
 		}
 	}
 
-	function canMoveDown(positions: { row: any; col: any }[]) {
+	function resetCurrent() {
+		setCurrentPiece(new Array<{ row: number, col: number }>())
+	}
+
+	function canMoveDown(positions: { row: any; col: any }[]): boolean {
 		let lowestRowIndex = Math.max(...positions.map((el: { row: any }) => el.row))
 		let lowestRow = positions.filter(({ row, col }) => row == lowestRowIndex)
 		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row == height - 1
 		let nextCellIsTakenAndDoesNotBelongToCur
-			= positions.some(
-				({ row, col }) => cellBelowIsOccupied(row, col) && !someCellsBelowBelongToCur(row, col)
-			)
+			= positions.some(({ row, col }) =>
+				cellBelowIsOccupied(row, col) && !someCellsBelowBelongToPositions(row, col))
 		return !(isBottomReached || nextCellIsTakenAndDoesNotBelongToCur)
 
-		function cellBelowIsOccupied(row: number, col: number): boolean {
-			return row != height - 1 && field[row + 1][col] == 1
-		}
-		function someCellsBelowBelongToCur(row: number, col: number): boolean {
+		function someCellsBelowBelongToPositions(row: number, col: number): boolean {
 			return positions.some(e => e.row == row + 1 && e.col == col)
 		}
+	}
+
+	function cellBelowIsOccupied(row: number, col: number): boolean {
+		return row != height - 1 && field[row + 1][col] == 1
 	}
 
 	function fillCell(row: number, col: number): void {
