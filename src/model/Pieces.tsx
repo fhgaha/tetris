@@ -46,3 +46,7 @@ export class Pieces {
 		}
 	}
 }
+
+export enum PieceTypes {
+	O, T, S, Z, J, K, L
+}

@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useInterval } from 'usehooks-ts'
 import { useKeyPress } from './useKeyPress'
 import { Pieces } from '../../../model/Pieces'
+import '../../../model/ExtensionMethods'
 
 export default function useLoop() {
 	const width = 10
 	const height = 20
 	const [field, setField] = useState<number[][]>(
 		Array.from({ length: height }, () => Array<number>(width).fill(0)))
-	const [currentPiece, setCurrentPiece] = useState(new Array<{ row: number, col: number }>())
+	const [currentPiece, setCurrentPiece] = useState({
+		pieceType: "",
+		positions: new Array<{ row: number, col: number }>()
+	})
 	const [nextPiece, setNextPiece] = useState(new Array<{ row: number, col: number }>())
 	const [direction, setDirection] = useState<string>("")
 
@@ -21,41 +25,27 @@ export default function useLoop() {
 		// fillCell(10, 5)
 		// addPiece(Pieces.getRandom(), 3)
 		addPiece(Pieces.L, 3)
-		let nextPositions = pieceToPositions(Pieces.getRandom(), 3)
+		let nextPositions = Pieces.getRandom().toPositions(3)
 		setNextPiece(nextPositions)
 	}, [])
 
 	function addPiece(piece: number[][], startCol: number) {
-		let newPositions = pieceToPositions(piece, startCol)
-		setCurrentPiece(newPositions)
+		let newPositions = piece.toPositions(startCol)
+		setCurrentPiece({ ...currentPiece, positions: newPositions })
 		if (nextPiece.length == 0) {
-			let newNextPositions = pieceToPositions(Pieces.getRandom(), startCol)
+			let newNextPositions = Pieces.getRandom().toPositions( startCol)
 			setNextPiece(newNextPositions)
 		}
 	}
 
 	useInterval(() => {
-			movePieceDown(1)
+		movePieceDown(1)
 	}, 500)
 
 	useInterval(() => {
 		readInput()
-		MovePiece()
+		movePiece()
 	}, 100)
-
-	function pieceToPositions(piece: number[][], startCol: number) {
-		let newPositions = new Array<{ row: number; col: number }>()
-
-		for (let i = 0; i < piece.length; i++) {
-			const pieceRow = piece[i]
-			for (let j = 0; j < pieceRow.length; j++) {
-				if (piece[i][j] == 1) {
-					newPositions.push({ row: i, col: j + startCol })
-				}
-			}
-		}
-		return newPositions
-	}
 
 	function readInput() {
 		let dir
@@ -67,7 +57,7 @@ export default function useLoop() {
 		setDirection(dir)
 	}
 
-	function MovePiece() {
+	function movePiece() {
 		switch (direction) {
 			case "u":
 				rotatePiece()
@@ -91,55 +81,54 @@ export default function useLoop() {
 	}
 
 	function movePieceLeft(): void {
-		let cur = currentPiece
-		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
-		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
+		let positions = currentPiece.positions
+		let mostLeftColIndex = Math.min(...positions.map(el => el.col))
+		let mostLeftCol = positions.filter(({ row, col }) => col == mostLeftColIndex)
 		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
 		let cellToLeftIsTaken = mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
 		let smthOnLeft = isWallReached || cellToLeftIsTaken
 		if (!smthOnLeft) {
-			for (let j = 0; j < cur.length; j++) {
-				const e = cur[j];
-				cur[j] = { row: e.row, col: e.col - 1 }
+			for (let j = 0; j < positions.length; j++) {
+				const e = positions[j];
+				positions[j] = { row: e.row, col: e.col - 1 }
 				emptyCell(e.row, e.col)
 			}
-			updateField(cur, 1)
-			setCurrentPiece(cur)
+			updateField(positions, 1)
+			setCurrentPiece({ ...currentPiece, positions: positions })
 		}
 	}
 
 	function movePieceRight(): void {
-		let cur = currentPiece
-		let mostRightColIndex = Math.max(...cur.map(el => el.col))
-		let mostRightCol = cur.filter(({ row, col }) => col == mostRightColIndex)
+		let positions = currentPiece.positions
+		let mostRightColIndex = Math.max(...positions.map(el => el.col))
+		let mostRightCol = positions.filter(({ row, col }) => col == mostRightColIndex)
 		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
 		let cellToRightIsTaken = mostRightCol.some(({ row, col }) => field[row][col + 1] == 1)
 		let smthOnRight = isWallReached || cellToRightIsTaken
 		if (!smthOnRight) {
-			for (let j = 0; j < cur.length; j++) {
-				const e = cur[j];
-				cur[j] = { row: e.row, col: e.col + 1 }
+			for (let j = 0; j < positions.length; j++) {
+				const e = positions[j];
+				positions[j] = { row: e.row, col: e.col + 1 }
 				emptyCell(e.row, e.col)
 			}
-			updateField(cur, 1)
-			setCurrentPiece(cur)
+			updateField(positions, 1)
+			setCurrentPiece({ ...currentPiece, positions: positions })
 		}
 	}
 
 	function movePieceDown(amount: number): void {
-		let cur = currentPiece
-		if (canMoveDown(cur)) {
-			for (let i = 0; i < cur.length; i++) {
-				let e = cur[i]
-				cur[i] = {
+		let positions = currentPiece.positions
+		if (canMoveDown(positions)) {
+			for (let i = 0; i < positions.length; i++) {
+				let e = positions[i]
+				positions[i] = {
 					row: e.row + Math.min(amount, height - 1 - e.row),
 					col: e.col
 				}
-				console.log(Math.min(amount, height - 1 - e.row));
 				emptyCell(e.row, e.col)
 			}
-			updateField(cur, 1)
-			setCurrentPiece(cur)
+			updateField(positions, 1)
+			setCurrentPiece({ ...currentPiece, positions: positions })
 		} else {
 			// addPiece(Pieces.getRandom(), 3)
 			addPiece(Pieces.L, 3)
@@ -147,7 +136,7 @@ export default function useLoop() {
 	}
 
 	function resetCurrent() {
-		setCurrentPiece(new Array<{ row: number, col: number }>())
+		setCurrentPiece({ pieceType: "", positions: new Array<{ row: number, col: number }>() })
 	}
 
 	function canMoveDown(positions: { row: any; col: any }[]): boolean {
