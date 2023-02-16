@@ -8,7 +8,8 @@ export default function useLoop() {
 	const height = 20
 	const [field, setField] = useState<number[][]>(
 		Array.from({ length: height }, () => Array<number>(width).fill(0)))
-	const [currentPiecePosition, setCurrentPiecePosition] = useState(new Array<{ row: number, col: number }>())
+	const [currentPiece, setCurrentPiece] = useState(new Array<{ row: number, col: number }>())
+	const [nextPiece, setNextPiece] = useState(new Array<{ row: number, col: number }>())
 	const [direction, setDirection] = useState<string>("")
 
 	const up: boolean = useKeyPress('ArrowUp')
@@ -18,32 +19,43 @@ export default function useLoop() {
 
 	useEffect(() => {
 		// fillCell(10, 5)
-		addPiece(Pieces.getRandom(), 3)
+		// addPiece(Pieces.getRandom(), 3)
+		addPiece(Pieces.L, 3)
+		let nextPositions = pieceToPositions(Pieces.getRandom(), 3)
+		setNextPiece(nextPositions)
 	}, [])
 
 	function addPiece(piece: number[][], startCol: number) {
-		let newArr = new Array<{ row: number, col: number }>()
-
-		for (let i = 0; i < piece.length; i++) {
-			const pieceRow = piece[i];
-			for (let j = 0; j < pieceRow.length; j++) {
-				updateCell(i, j + startCol, piece[i][j])
-				if (piece[i][j] == 1) {
-					newArr.push({ row: i, col: j + startCol })
-				}
-			}
+		let newPositions = pieceToPositions(piece, startCol)
+		setCurrentPiece(newPositions)
+		if (nextPiece.length == 0) {
+			let newNextPositions = pieceToPositions(Pieces.getRandom(), startCol)
+			setNextPiece(newNextPositions)
 		}
-		setCurrentPiecePosition(newArr)
 	}
 
 	useInterval(() => {
-		movePieceDown()
+		movePieceDown(1)
 	}, 500)
 
 	useInterval(() => {
 		readInput()
-		tryMovePiece()
+		MovePiece()
 	}, 100)
+
+	function pieceToPositions(piece: number[][], startCol: number) {
+		let newPositions = new Array<{ row: number; col: number }>()
+
+		for (let i = 0; i < piece.length; i++) {
+			const pieceRow = piece[i]
+			for (let j = 0; j < pieceRow.length; j++) {
+				if (piece[i][j] == 1) {
+					newPositions.push({ row: i, col: j + startCol })
+				}
+			}
+		}
+		return newPositions
+	}
 
 	function readInput() {
 		let dir
@@ -55,14 +67,13 @@ export default function useLoop() {
 		setDirection(dir)
 	}
 
-	function tryMovePiece() {
-		if (direction == "") return
-
+	function MovePiece() {
 		switch (direction) {
 			case "u":
 				rotatePiece()
 				break;
 			case "d":
+				movePieceDown(2)
 				break;
 			case "l":
 				movePieceLeft()
@@ -80,7 +91,7 @@ export default function useLoop() {
 	}
 
 	function movePieceLeft(): void {
-		let cur = currentPiecePosition
+		let cur = currentPiece
 		let mostLeftColIndex = Math.min(...cur.map(el => el.col))
 		let mostLeftCol = cur.filter(({ row, col }) => col == mostLeftColIndex)
 		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
@@ -93,12 +104,12 @@ export default function useLoop() {
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrentPiecePosition(cur)
+			setCurrentPiece(cur)
 		}
 	}
 
 	function movePieceRight(): void {
-		let cur = currentPiecePosition
+		let cur = currentPiece
 		let mostRightColIndex = Math.max(...cur.map(el => el.col))
 		let mostRightCol = cur.filter(({ row, col }) => col == mostRightColIndex)
 		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
@@ -111,22 +122,24 @@ export default function useLoop() {
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrentPiecePosition(cur)
+			setCurrentPiece(cur)
 		}
 	}
 
-	function movePieceDown(): void {
-		let cur = currentPiecePosition
+	function movePieceDown(amount: number): void {
+		let cur = currentPiece
 		if (canMoveDown(cur)) {
 			for (let i = 0; i < cur.length; i++) {
 				let e = cur[i]
-				cur[i] = { row: e.row + 1, col: e.col }
+				cur[i] = {
+					row: e.row + Math.min(amount, height - 1 - e.row),
+					col: e.col
+				}
 				emptyCell(e.row, e.col)
 			}
 			updateField(cur, 1)
-			setCurrentPiecePosition(cur)
+			setCurrentPiece(cur)
 		} else {
-			setCurrentPiecePosition(new Array<{ row: number, col: number }>())
 			addPiece(Pieces.getRandom(), 3)
 		}
 	}
