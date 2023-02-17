@@ -23,18 +23,11 @@ function draw(field: number[][]): React.ReactNode {
       {rows.map((col, j) => (
         <li key={"li-" + j}>
           {
-          // getSymbol(rows[j], j)
-          rows[j]
+            rows[j] == 0 ? " ." : "[]"
+            // rows[j]
           }
         </li>))}
     </ul>
   ))
-  // console.log(result);
   return result
-}
-
-function getSymbol(value: number, index: number) {
-  return index % 2 == 0
-    ? value == 0 ? ' ' : '['
-    : value == 0 ? '.' : ']'
 }

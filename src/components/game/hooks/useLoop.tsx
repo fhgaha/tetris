@@ -3,17 +3,17 @@ import { useInterval } from 'usehooks-ts'
 import { useKeyPress } from './useKeyPress'
 import { Pieces } from '../../../model/Pieces'
 import '../../../model/ExtensionMethods'
+import { PieceTypes } from '../../../model/PIeceTypes'
+
+const width = 10
+const height = 20
+const emptyField = Array.from({ length: height }, () => Array<number>(width).fill(0))
+const emptyPositions = new Array<{ row: number, col: number }>()
 
 export default function useLoop() {
-	const width = 10
-	const height = 20
-	const [field, setField] = useState<number[][]>(
-		Array.from({ length: height }, () => Array<number>(width).fill(0)))
-	const [currentPiece, setCurrentPiece] = useState({
-		pieceType: "",
-		positions: new Array<{ row: number, col: number }>()
-	})
-	const [nextPiece, setNextPiece] = useState(new Array<{ row: number, col: number }>())
+	const [field, setField] = useState<number[][]>(emptyField)
+	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes, positions: emptyPositions })
+	const [nextPiece, setNextPiece] = useState(emptyPositions)
 	const [direction, setDirection] = useState<string>("")
 
 	const up: boolean = useKeyPress('ArrowUp')
@@ -23,8 +23,8 @@ export default function useLoop() {
 
 	useEffect(() => {
 		// fillCell(10, 5)
-		// addPiece(Pieces.getRandom(), 3)
-		addPiece(Pieces.L, 3)
+		addPiece(Pieces.getRandom(), 3)
+		// addPiece(Pieces.L, 3)
 		let nextPositions = Pieces.getRandom().toPositions(3)
 		setNextPiece(nextPositions)
 	}, [])
@@ -33,7 +33,7 @@ export default function useLoop() {
 		let newPositions = piece.toPositions(startCol)
 		setCurrentPiece({ ...currentPiece, positions: newPositions })
 		if (nextPiece.length == 0) {
-			let newNextPositions = Pieces.getRandom().toPositions( startCol)
+			let newNextPositions = Pieces.getRandom().toPositions(startCol)
 			setNextPiece(newNextPositions)
 		}
 	}
@@ -77,7 +77,8 @@ export default function useLoop() {
 	}
 
 	function rotatePiece() {
-
+		// let rotated = currentPiece.rotate()
+		// setCurrentPiece({...currentPiece, positions: rotated})
 	}
 
 	function movePieceLeft(): void {
@@ -130,13 +131,13 @@ export default function useLoop() {
 			updateField(positions, 1)
 			setCurrentPiece({ ...currentPiece, positions: positions })
 		} else {
-			// addPiece(Pieces.getRandom(), 3)
-			addPiece(Pieces.L, 3)
+			addPiece(Pieces.getRandom(), 3)
+			// addPiece(Pieces.L, 3)
 		}
 	}
 
 	function resetCurrent() {
-		setCurrentPiece({ pieceType: "", positions: new Array<{ row: number, col: number }>() })
+		setCurrentPiece({ pieceType: PieceTypes, positions: emptyPositions })
 	}
 
 	function canMoveDown(positions: { row: any; col: any }[]): boolean {
