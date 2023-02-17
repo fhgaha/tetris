@@ -4,6 +4,8 @@ import { useKeyPress } from './useKeyPress'
 import { Pieces } from '../../../model/Pieces'
 import '../../../model/ExtensionMethods'
 import { PieceTypes } from '../../../model/PieceTypes'
+import { PieceData } from '../../../model/PieceData'
+import { wait } from '@testing-library/user-event/dist/utils'
 
 const width = 10
 const height = 20
@@ -29,14 +31,7 @@ export default function useLoop() {
 		setNextPiece(nextPositions)
 	}, [])
 
-	function addPiece(
-		piece: {
-			pieceType: PieceTypes, positions: {
-				row: number,
-				col: number
-			}[]
-		}, startCol: number
-	): void {
+	function addPiece(piece: PieceData, startCol: number): void {
 		let newPositions = piece.positions.toPositions(startCol)
 		setCurrentPiece(piece)
 		if (nextPiece.positions.length == 0) {
@@ -67,6 +62,7 @@ export default function useLoop() {
 	function movePiece() {
 		switch (direction) {
 			case "u":
+				wait(100)
 				rotatePiece()
 				break;
 			case "d":

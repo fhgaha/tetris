@@ -68,6 +68,32 @@ export class Pieces {
 		]
 	}
 
+	static J90 = {
+		pieceType: PieceTypes.J90,
+		positions: [
+			[1, 0],
+			[1, 0],
+			[1, 1]
+		]
+	}
+
+	static J180 = {
+		pieceType: PieceTypes.J180,
+		positions: [
+			[1, 1, 1],
+			[1, 0, 0]
+		]
+	}
+
+	static J270 = {
+		pieceType: PieceTypes.J270,
+		positions: [
+			[1, 1],
+			[0, 1],
+			[0, 1]
+		]
+	}
+
 	static L = {
 		pieceType: PieceTypes.L,
 		positions: [
@@ -99,12 +125,27 @@ export class Pieces {
 
 	static rotate(p: PieceData): PieceData {
 		switch (p.pieceType) {
+			case PieceTypes.O:
+				return p
 			case PieceTypes.T:
+			case PieceTypes.T90:
+			case PieceTypes.T180:
+			case PieceTypes.T270:
 				return this.rotateT(p)
-				break;
+			case PieceTypes.S:
+			case PieceTypes.Z:
+				return this.rotateSZ(p)
+			case PieceTypes.J:
+			case PieceTypes.J90:
+			case PieceTypes.J180:
+			case PieceTypes.J270:
+				return this.rotateJ(p)
+
 
 			default:
-				return { pieceType: PieceTypes.I, positions: this.T.positions.toPositions(3) }
+				// return { pieceType: PieceTypes.I, positions: this.I.positions.toPositions(3) }
+				throw new Error("Unknown piece type: " + p.pieceType);
+
 		}
 	}
 
@@ -118,10 +159,72 @@ export class Pieces {
 					pieceType: this.T90.pieceType,
 					positions: this.T90.positions.toPositions(mostLeftColIndex, topRowIndex)
 				}
+			case this.T90.pieceType:
+				return {
+					pieceType: this.T180.pieceType,
+					positions: this.T180.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.T180.pieceType:
+				return {
+					pieceType: this.T270.pieceType,
+					positions: this.T270.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.T270.pieceType:
+				return {
+					pieceType: this.T.pieceType,
+					positions: this.T.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			default: throw new Error("Unknown piece type")
+		}
+	}
 
-			default:
-				return { pieceType: PieceTypes.I, positions: this.T.positions.toPositions(3) }
+	static rotateSZ(p: PieceData): PieceData {
+		let mostLeftColIndex = p.positions.reduce((prev, cur) => prev.col < cur.col ? prev : cur).col
+		let topRowIndex = p.positions.reduce((prev, cur) => prev.row < cur.row ? prev : cur).row
+
+		switch (p.pieceType) {
+			case this.S.pieceType:
+				return {
+					pieceType: this.Z.pieceType,
+					positions: this.Z.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.Z.pieceType:
+				return {
+					pieceType: this.S.pieceType,
+					positions: this.S.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			default: throw new Error("Unknown piece type")
+		}
+	}
+
+	static rotateJ(p: PieceData): PieceData {
+		let mostLeftColIndex = p.positions.reduce((prev, cur) => prev.col < cur.col ? prev : cur).col
+		let topRowIndex = p.positions.reduce((prev, cur) => prev.row < cur.row ? prev : cur).row
+
+		switch (p.pieceType) {
+			case this.J.pieceType:
+				return {
+					pieceType: this.J90.pieceType,
+					positions: this.J90.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.J90.pieceType:
+				return {
+					pieceType: this.J180.pieceType,
+					positions: this.J180.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.J180.pieceType:
+				return {
+					pieceType: this.J270.pieceType,
+					positions: this.J270.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			case this.J270.pieceType:
+				return {
+					pieceType: this.J.pieceType,
+					positions: this.J.positions.toPositions(mostLeftColIndex, topRowIndex)
+				}
+			default: throw new Error("Unknown piece type")
 		}
 	}
 }
+
 
