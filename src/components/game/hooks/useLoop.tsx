@@ -25,7 +25,7 @@ export default function useLoop() {
 	useEffect(() => {
 		// fillCell(10, 5)
 		// addPiece(Pieces.getRandom(), 3)
-		addPiece({ pieceType: Pieces.S.pieceType, positions: Pieces.S.positions.toPositions(3) }, 0)
+		addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
 		let nextPositions = Pieces.getRandom()
 		setNextPiece(nextPositions)
 	}, [])
