@@ -16,17 +16,16 @@ export default function useLoop() {
 	const [field, setField] = useState<number[][]>(emptyField)
 	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
-	const [direction, setDirection] = useState<string>("")
 
-	const up: boolean = useKeyPress('ArrowUp')
-	const down: boolean = useKeyPress('ArrowDown')
-	const left: boolean = useKeyPress('ArrowLeft')
-	const right: boolean = useKeyPress('ArrowRight')
+	const up: boolean = useKeyPress('ArrowUp', () => rotatePiece())
+	const down: boolean = useKeyPress('ArrowDown', () => movePieceDown(1))
+	const left: boolean = useKeyPress('ArrowLeft', () => movePieceLeft())
+	const right: boolean = useKeyPress('ArrowRight', () => movePieceRight())
 
 	useEffect(() => {
 		// fillCell(10, 5)
 		// addPiece(Pieces.getRandom(), 3)
-		addPiece({ pieceType: Pieces.T.pieceType, positions: Pieces.T.positions.toPositions(3) }, 0)
+		addPiece({ pieceType: Pieces.S.pieceType, positions: Pieces.S.positions.toPositions(3) }, 0)
 		let nextPositions = Pieces.getRandom()
 		setNextPiece(nextPositions)
 	}, [])
@@ -43,41 +42,6 @@ export default function useLoop() {
 	useInterval(() => {
 		movePieceDown(1)
 	}, 500)
-
-	useInterval(() => {
-		readInput()
-		movePiece()
-	}, 100)
-
-	function readInput() {
-		let dir
-			= up ? "u"
-				: down ? "d"
-					: left ? "l"
-						: right ? "r"
-							: ""
-		setDirection(dir)
-	}
-
-	function movePiece() {
-		switch (direction) {
-			case "u":
-				wait(100)
-				rotatePiece()
-				break;
-			case "d":
-				movePieceDown(1)
-				break;
-			case "l":
-				movePieceLeft()
-				break;
-			case "r":
-				movePieceRight()
-				break;
-			default:
-				break;
-		}
-	}
 
 	function rotatePiece() {
 		let rotated = Pieces.rotate(currentPiece)
@@ -190,4 +154,5 @@ export default function useLoop() {
 
 	return field
 }
+
 

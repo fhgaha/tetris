@@ -1,28 +1,36 @@
 import { useState, useEffect } from "react";
 
-export function useKeyPress(targetKey: string) {
+export function useKeyPress(targetKey: string, onPressDown = () => { }, onPressUp = () => { }) {
   // State for keeping track of whether key is pressed
-  const [keyPressed, setKeyPressed] = useState<boolean>(false);
-  // Add event listeners
+  const [keyPressed, setKeyPressed] = useState(false);
+
   useEffect(() => {
     // If pressed key is our target key then set to true
-    function downHandler({ key }: any) {
-      if (!keyPressed && key === targetKey) {
+    function downHandler({ key }: { key: string }) {
+      if (key === targetKey) {
         setKeyPressed(true);
-        // rather than rely on keyup to unpress, use a timeout to workaround the fact that
-        // keyup events are unreliable when the meta key is down. See Issue #3:
-        // http://web.archive.org/web/20160304022453/http://bitspushedaround.com/on-a-few-things-you-may-not-know-about-the-hellish-command-key-and-javascript-events/
-        setTimeout(() => {
-          setKeyPressed(false);
-        }, 100);
+        onPressDown();
       }
     }
 
-    window.addEventListener("keydown", downHandler);
+    // If released key is our target key then set to false
+    const upHandler = ({ key }: { key: string }) => {
+      if (key === targetKey) {
+        setKeyPressed(false);
+        onPressUp();
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('keydown', downHandler);
+    window.addEventListener('keyup', upHandler);
+
     // Remove event listeners on cleanup
     return () => {
-      window.removeEventListener("keydown", downHandler);
+      window.removeEventListener('keydown', downHandler);
+      window.removeEventListener('keyup', upHandler);
     };
-  }, []); // Empty array ensures that effect is only run on mount and unmount
+  });
+
   return keyPressed;
 }
