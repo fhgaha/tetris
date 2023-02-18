@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { FC } from 'react'
+import { PieceData } from '../../../model/PieceData'
 
-const NextPiece = () => {
+const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
   return (
-	<div>nextPiece</div>
+    <>
+      <div>NEXT PIECE:</div>
+      {positions.map((e, i) => (
+        <div>{e.row} {e.col}</div>
+      ))}
+    </>
   )
 }
 
