@@ -11,21 +11,23 @@ const width = 10
 const height = 20
 const emptyField = Array.from({ length: height }, () => Array<number>(width).fill(0))
 const emptyPositions = new Array<{ row: number, col: number }>()
+const speedSlow = 500, speedFast = 100
 
 export default function useLoop() {
 	const [field, setField] = useState<number[][]>(emptyField)
 	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
+	const [time, setTime] = useState(500)
 
 	const up: boolean = useKeyPress('ArrowUp', () => rotatePiece())
-	const down: boolean = useKeyPress('ArrowDown', () => movePieceDown(1))
+	const down: boolean = useKeyPress('ArrowDown', () => setTime(speedFast), () => setTime(speedSlow))
 	const left: boolean = useKeyPress('ArrowLeft', () => movePieceLeft())
 	const right: boolean = useKeyPress('ArrowRight', () => movePieceRight())
 
 	useEffect(() => {
 		// fillCell(10, 5)
-		// addPiece(Pieces.getRandom(), 3)
-		addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
+		addPiece(Pieces.getRandom(), 3)
+		// addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
 		let nextPositions = Pieces.getRandom()
 		setNextPiece(nextPositions)
 	}, [])
@@ -41,7 +43,8 @@ export default function useLoop() {
 
 	useInterval(() => {
 		movePieceDown(1)
-	}, 500)
+		checkFilledRow()
+	}, speedSlow)
 
 	function rotatePiece() {
 		let rotated = Pieces.rotate(currentPiece)
@@ -152,7 +155,24 @@ export default function useLoop() {
 		})
 	}
 
+	function checkFilledRow() {
+		let rowsToClear: number[] = []
+		for (let i = 0; i < field.length; i++) {
+			const row = field[i];
+			if (row.every(n => n == 1)) {
+				rowsToClear.push(i)
+			}
+		}
+
+		if (rowsToClear.length > 0) {
+			let newField = field.filter((row, i) => !rowsToClear.some(index => index == i))
+			rowsToClear.forEach(r => { newField.unshift(new Array<number>(width).fill(0)) });
+			setField(newField)
+		}
+	}
+
 	return field
 }
+
 
 
