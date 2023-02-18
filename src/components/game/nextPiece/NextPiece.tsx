@@ -3,21 +3,26 @@ import { PieceData } from '../../../model/PieceData'
 import st from "./nextPiece.module.css";
 import { drawTable } from '../../../utils/helpers';
 
-const emptyArr = [
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-  [0, 0, 0, 0],
-]
+const offset = 3
 
 const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
-  const [arr, setArr] = useState(emptyArr)
+  const [arr, setArr] = useState([
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+  ])
 
   useEffect(() => {
-    let newArr = emptyArr
+    let newArr = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ]
     positions.forEach(p => {
-      newArr[p.row][p.col] = 1
-    });
+      newArr[p.col - offset][p.row] = 1
+    })
     setArr(newArr)
     console.log(newArr)
   }, [positions])
@@ -27,10 +32,11 @@ const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
     <div className={st["next-piece"]}>
       <div>NEXT PIECE:</div>
 
-      <div>
+      {/* <div>
         {positions.map((e, i) => (
           <div key={e.row + ' ' + e.col}>{e.row} {e.col}</div>
-        ))}</div>
+        ))}
+      </div> */}
 
       <div className={st.piece}>
         {arr.map((rows, i) => (

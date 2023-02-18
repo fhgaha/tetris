@@ -20,6 +20,7 @@ export default function useLoop() {
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [speed, setSpeed] = useState(500)
 
+	//event.key
 	useKeyPress('ArrowUp', () => rotatePiece())
 	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
 	useKeyPress('ArrowLeft', () => movePieceLeft())
