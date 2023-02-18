@@ -14,6 +14,7 @@ const emptyPositions = new Array<{ row: number, col: number }>()
 const speedSlow = 500, speedFast = 100
 
 export default function useLoop() {
+	const [isPaused, setIsPaused] = useState(false)
 	const [field, setField] = useState<number[][]>(emptyField)
 	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
@@ -23,6 +24,7 @@ export default function useLoop() {
 	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
 	useKeyPress('ArrowLeft', () => movePieceLeft())
 	useKeyPress('ArrowRight', () => movePieceRight())
+	useKeyPress(' ', () => setIsPaused(!isPaused)) 
 
 	useEffect(() => {
 		// fillCell(10, 5)
@@ -34,15 +36,12 @@ export default function useLoop() {
 
 	function addPiece(piece: PieceData, startCol: number): void {
 		setCurrentPiece(piece)
-		if (nextPiece.positions.length == 0) {
-			let newNextPositions = Pieces.getRandom()
-			setNextPiece(newNextPositions)
-		}
+		setNextPiece(Pieces.getRandom())
 	}
 
 	useInterval(() => {
 		movePieceDown(1)
-	}, speed)
+	}, isPaused ? null : speed)
 
 	function rotatePiece() {
 		let rotated = Pieces.rotate(currentPiece)
@@ -101,7 +100,8 @@ export default function useLoop() {
 			setCurrentPiece({ ...currentPiece, positions: positions })
 		} else {
 			checkFilledRow()
-			addPiece(Pieces.getRandom(), 3)
+			addPiece(nextPiece, 0)
+			// addPiece(Pieces.getRandom(), 3)
 			// addPiece(Pieces.L, 3)
 		}
 	}

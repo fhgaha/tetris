@@ -1,0 +1,9 @@
+.next-piece>div {
+	display: flex;
+	white-space: break-spaces;
+	justify-content: end;
+}
+
+.piece {
+	flex-direction: row;
+}
