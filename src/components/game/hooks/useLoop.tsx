@@ -19,10 +19,10 @@ export default function useLoop() {
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [speed, setSpeed] = useState(500)
 
-	const up: boolean = useKeyPress('ArrowUp', () => rotatePiece())
-	const down: boolean = useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
-	const left: boolean = useKeyPress('ArrowLeft', () => movePieceLeft())
-	const right: boolean = useKeyPress('ArrowRight', () => movePieceRight())
+	useKeyPress('ArrowUp', () => rotatePiece())
+	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
+	useKeyPress('ArrowLeft', () => movePieceLeft())
+	useKeyPress('ArrowRight', () => movePieceRight())
 
 	useEffect(() => {
 		// fillCell(10, 5)
@@ -42,7 +42,6 @@ export default function useLoop() {
 
 	useInterval(() => {
 		movePieceDown(1)
-		checkFilledRow()
 	}, speed)
 
 	function rotatePiece() {
@@ -101,6 +100,7 @@ export default function useLoop() {
 			updateField(positions, 1)
 			setCurrentPiece({ ...currentPiece, positions: positions })
 		} else {
+			checkFilledRow()
 			addPiece(Pieces.getRandom(), 3)
 			// addPiece(Pieces.L, 3)
 		}
@@ -170,7 +170,7 @@ export default function useLoop() {
 		}
 	}
 
-	return field
+	return { field, nextPiece }
 }
 
 

@@ -4,7 +4,7 @@ import st from './field.module.css'
 import useLoop from '../hooks/useLoop'
 
 const Field = () => {
-  const field = useLoop()
+  const {field, nextPiece} = useLoop()
 
   return (
     <div className={st['game']}>
