@@ -17,10 +17,10 @@ export default function useLoop() {
 	const [field, setField] = useState<number[][]>(emptyField)
 	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
-	const [time, setTime] = useState(500)
+	const [speed, setSpeed] = useState(500)
 
 	const up: boolean = useKeyPress('ArrowUp', () => rotatePiece())
-	const down: boolean = useKeyPress('ArrowDown', () => setTime(speedFast), () => setTime(speedSlow))
+	const down: boolean = useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
 	const left: boolean = useKeyPress('ArrowLeft', () => movePieceLeft())
 	const right: boolean = useKeyPress('ArrowRight', () => movePieceRight())
 
@@ -33,7 +33,6 @@ export default function useLoop() {
 	}, [])
 
 	function addPiece(piece: PieceData, startCol: number): void {
-		let newPositions = piece.positions.toPositions(startCol)
 		setCurrentPiece(piece)
 		if (nextPiece.positions.length == 0) {
 			let newNextPositions = Pieces.getRandom()
@@ -44,7 +43,7 @@ export default function useLoop() {
 	useInterval(() => {
 		movePieceDown(1)
 		checkFilledRow()
-	}, speedSlow)
+	}, speed)
 
 	function rotatePiece() {
 		let rotated = Pieces.rotate(currentPiece)
