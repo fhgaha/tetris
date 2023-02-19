@@ -5,11 +5,11 @@ import Info from "./info/Info"
 import NextPiece from "./nextPiece/NextPiece"
 
 const Game = () => {
-	const { field, nextPiece } = useLoop()
+	const { field, nextPiece, fullLinesCounter } = useLoop()
 
 	return (
 		<>
-			<Info />
+			<Info fullLinesCounter={fullLinesCounter}/>
 			<Field field={field} />
 			<NextPiece {...nextPiece} />
 		</>

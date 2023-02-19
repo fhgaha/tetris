@@ -27,7 +27,6 @@ const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
     console.log(newArr)
   }, [positions])
 
-
   return (
     <div className={st["next-piece"]}>
       <div>NEXT PIECE:</div>
@@ -40,21 +39,15 @@ const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
 
       <div className={st.piece}>
         {arr.map((rows, i) => (
-          <ul
-            // className={st['ul-field']}
-            key={'ul-' + i}>
+          <ul key={'ul-' + i}>
             {rows.map((col, j) => (
               <li key={"li-" + j}>
-                {
-                  rows[j] == 0 ? "  " : "[]"
-                }
+                {rows[j] == 0 ? "  " : "[]"}
               </li>))}
           </ul>
         ))}
       </div>
     </div>
-
-
   )
 }
 
