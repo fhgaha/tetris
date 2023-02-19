@@ -173,7 +173,7 @@ export default function useLoop() {
 		}
 	}
 
-	return { field, nextPiece, fullLinesCounter }
+	return { field, nextPiece, fullLinesCounter, isPaused }
 }
 
 
