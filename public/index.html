@@ -1,20 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Tetris</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>Tetris</title>
+</head>
+
+<body>
+  <noscript> You need to enable JavaScript to run this app. </noscript>
+  <div id="root"></div>
+
+  <!-- <canvas id="I" height="128" width="128"></canvas>
+  <script>
+    (function () {
+      var w, h = w = Math.pow(2, 7);
+      var canvas = document.querySelector('#I');
+      canvas.width = canvas.height = w;
+      var ctx = canvas.getContext('2d');
+      var r = 0;
+      (function yy() {
+        requestAnimationFrame(yy);
+
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.beginPath();
+        ctx.translate(50, 50);
+        ctx.rotate((++r * 0.01) % 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, 25, 25);
+        ctx.restore();
+
+        ctx.strokeStyle = 'white';
+        for (var i = 0; i < 15; ++i) {
+          ctx.beginPath();
+          ctx.moveTo(i * 10, 0);
+          ctx.lineTo(i * 10, canvas.height);
+          ctx.closePath();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(0, i * 10);
+          ctx.lineTo(canvas.width, i * 10);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      })();
+    })();
+  </script>
+
+  <canvas id="J" width="128" height="128"></canvas>
+  <script type="Jvertex">
+    attribute vec2 a_pos;
+    varying vec2 v_pos;
+    void main() {
+        v_pos = a_pos.xy;
+        gl_Position = vec4(a_pos, 0.0, 1.0);
+        gl_PointSize = 1.0;
+    }
+  </script>
+  <script type="Jfragment">
+    precision highp float;
+
+    uniform float u_barrel_power;
+    vec2 distort(vec2 p)
+    {
+        float theta  = atan(p.y, p.x);
+        float radius = length(p);
+        radius = pow(radius, u_barrel_power);
+        p.x = radius * cos(theta);
+        p.y = radius * sin(theta);
+        return 0.5 * (p + 1.0);
+    }
+
+    varying vec2 v_pos;
+    uniform sampler2D u_tex;
+
+    void main() {
+      vec2 d = distort(v_pos);
+      if (d.x > 1.0 || d.x < 0.0 || d.y > 1.0 || d.y < 0.0) gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      else gl_FragColor = texture2D(u_tex, d);
+    }
+  </script>
+  <script>
+    (function () {
+      var source = document.getElementById('I');
+      var canvas = document.getElementById('J');
+      canvas.width = source.width;
+      canvas.height = source.height;
+      var gl = canvas.getContext('experimental-webgl');
+      if (!gl) return document.querySelector('#Jerror').innerHTML = 'Failed to get WebGL context :(';
+
+      try {
+        var program = gl.createProgram();
+
+        // vertex shader: pixel mapping set vec4 to gl_Position
+        var vertShaderObj = gl.createShader(gl.VERTEX_SHADER);
+        var vertexShaderSrc = document.querySelector('[type="Jvertex"]').textContent;
+        gl.shaderSource(vertShaderObj, vertexShaderSrc);
+        gl.compileShader(vertShaderObj);
+        gl.attachShader(program, vertShaderObj);
+
+        // fragment shader: pixel coloring, set vec4 to gl_FragColor
+        var fragShaderObj = gl.createShader(gl.FRAGMENT_SHADER);
+        var fragmentShaderSrc = document.querySelector('[type="Jfragment"]').textContent;
+        gl.shaderSource(fragShaderObj, fragmentShaderSrc);
+        gl.compileShader(fragShaderObj);
+        gl.attachShader(program, fragShaderObj);
+
+        gl.linkProgram(program);
+        gl.useProgram(program);
+        if (!gl.getShaderParameter(vertShaderObj, gl.COMPILE_STATUS)) throw new Error("Could not compile shader: " + gl.getShaderInfoLog(vertShaderObj));
+        if (!gl.getShaderParameter(fragShaderObj, gl.COMPILE_STATUS)) throw new Error("Could not compile shader: " + gl.getShaderInfoLog(fragShaderObj));
+      } catch (e) {
+        if (!gl) return document.querySelector('#Jerror').innerHTML = 'Failed to compile shaders:\n' + (e && e.stack || e);
+      }
+
+      var n = 0;
+      var arr = [];
+      var w = source.width;
+      var h = source.height;
+      var len = w * h * 2;
+      for (var i = 0; i < len; i += 2) {
+        arr[i] = (Math.floor(++n % w) / w) * 2 - 1;
+        arr[i + 1] = (Math.round(n / w) / h) * 2 - 1;
+      }
+      var farr = new Float32Array(arr);
+
+      var positionLocation = gl.getAttribLocation(program, 'a_pos');
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, farr, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+      var barrelPowerLocation = gl.getUniformLocation(program, 'u_barrel_power');
+      gl.uniform1f(barrelPowerLocation, 1.5);
+
+      (function xx() {
+        requestAnimationFrame(xx);
+
+        var tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.uniform1i(gl.getUniformLocation(program, 'u_tex'), 0);
+
+        // draw
+        gl.drawArrays(gl.POINTS, 0, arr.length / 2);
+
+        gl.deleteTexture(tex);
+        tex = null;
+      })();
+    })();
+  </script> -->
+
+</body>
+
 </html>

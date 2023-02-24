@@ -1,0 +1,18 @@
+.crt {
+	/* height: 800px; */
+	/* filter: url(#SphereMapTest) url(#contrast) url(#brightness) url(#colorfill); */
+	/* min-width: 90%; */
+	/* min-height: 95%; */
+	/* background-color: black; */
+	/* background-image: radial-gradient(200% 250% at center, rgba(0, 50, 50, 0.75), black 100%); */
+	/* border: 1px solid yellow; */
+	/* background-clip: padding-box; */
+	/* color: #009900; */
+	/* margin: 15; */
+	/* overflow: auto; */
+	/* padding: 2rem; */
+	/* font-family: "WebPlus_IBM_VGA_8x16", Inconsolata, monospace; */
+	/* font-size: 20px; */
+	/* text-shadow: 0 0 5px #707070; */
+	/* animation: textShadow 0.15s infinite; */
+}

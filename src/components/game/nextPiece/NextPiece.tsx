@@ -24,7 +24,6 @@ const NextPiece: FC<PieceData> = ({ pieceType, positions }): JSX.Element => {
       newArr[p.col - offset][p.row] = 1
     })
     setArr(newArr)
-    console.log(newArr)
   }, [positions])
 
   return (

@@ -20,6 +20,7 @@ export default function useLoop() {
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [speed, setSpeed] = useState(500)
 	const [fullLinesCounter, setFullLinesCounter] = useState(0)
+	const [score, setScore] = useState(0)
 
 	//event.key
 	useKeyPress('ArrowUp', () => rotatePiece())
@@ -170,6 +171,7 @@ export default function useLoop() {
 			rowsToClear.forEach(r => { newField.unshift(new Array<number>(width).fill(0)) });
 			setField(newField)
 			setFullLinesCounter(fullLinesCounter + rowsToClear.length)
+			setScore(score + 1)
 		}
 	}
 
