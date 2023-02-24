@@ -20,11 +20,7 @@ const Game = () => {
 	}, 1000)
 
 	return (
-		<div className={st.game}
-			style={{
-				border: "1px solid darkcyan",
-			}}
-		>
+		<div className={st.game}>
 			<Info info={fullLinesCounter} time={time} />
 			<Field field={field} />
 			<NextPiece {...nextPiece} />
