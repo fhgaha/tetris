@@ -1,5 +1,5 @@
 import { PieceData } from "./PieceData"
-import { PieceTypes } from "./PIeceTypesAAAAAAAA"
+import { PieceTypes } from "./PieceTypes"
 
 export class Pieces {
 	static O = {
