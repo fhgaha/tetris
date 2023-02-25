@@ -1,4 +1,4 @@
-import { PieceTypes } from "./PieceTypes"
+import { PieceTypes } from "./PIeceTypesAAAAAAAA"
 
 export type PieceData = {
 	pieceType: PieceTypes,

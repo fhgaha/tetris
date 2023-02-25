@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { PieceTypes } from "../../model/PieceTypes"
+import { PieceTypes } from "../../model/PIeceTypesAAAAAAAA"
 import Field from "./field/Field"
 import useLoop from "./hooks/useLoop"
 import Info from "./info/Info"

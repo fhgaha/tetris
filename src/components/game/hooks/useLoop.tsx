@@ -3,7 +3,7 @@ import { useInterval } from 'usehooks-ts'
 import { useKeyPress } from './useKeyPress'
 import { Pieces } from '../../../model/Pieces'
 import '../../../model/ExtensionMethods'
-import { PieceTypes } from '../../../model/PieceTypes'
+import { PieceTypes } from '../../../model/PIeceTypesAAAAAAAA'
 import { PieceData } from '../../../model/PieceData'
 
 const width = 10
