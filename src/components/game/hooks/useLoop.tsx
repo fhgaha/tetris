@@ -5,7 +5,6 @@ import { Pieces } from '../../../model/Pieces'
 import '../../../model/ExtensionMethods'
 import { PieceTypes } from '../../../model/PieceTypes'
 import { PieceData } from '../../../model/PieceData'
-import { wait } from '@testing-library/user-event/dist/utils'
 
 const width = 10
 const height = 20
