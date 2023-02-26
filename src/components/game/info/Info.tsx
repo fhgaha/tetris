@@ -6,13 +6,14 @@ interface InfoProps {
 	info: number,
 	time: Date,
 	score: number,
+	level: number,
 }
 
-const Info: FC<InfoProps> = ({ info: fullLinesCounter, time: time, score: score}) => {
+const Info: FC<InfoProps> = ({ info: fullLinesCounter, time: time, score: score, level: level }) => {
 	return (
 		<div className={st["info-container"]}>
 			<div> FULL LINES: {fullLinesCounter}</div>
-			<div> LEVEL: 1</div>
+			<div> LEVEL: {level}</div>
 			<div> SCORE: {score}</div>
 			<div> TIME:
 				{time.getUTCHours() > 0 ? (time.getUTCHours() + ':') : ' '}

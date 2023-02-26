@@ -20,6 +20,7 @@ export default function useLoop() {
 	const [speed, setSpeed] = useState(500)
 	const [fullLinesCounter, setFullLinesCounter] = useState(0)
 	const [score, setScore] = useState(0)
+	const [level, setLevel] = useState(1)
 
 	//event.key
 	useKeyPress('ArrowUp', () => rotatePiece())
@@ -31,13 +32,14 @@ export default function useLoop() {
 	useEffect(() => {
 		// fillCell(10, 5)
 		// addPiece(Pieces.getRandom(), 3)
-		addPiece({ pieceType: Pieces.L.pieceType, positions: Pieces.L.positions.toPositions(3) }, 0)
-		setNextPiece(Pieces.getRandom())
+		addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
 	}, [])
 
 	function addPiece(piece: PieceData, startCol: number): void {
 		setCurrentPiece(piece)
-		setNextPiece(Pieces.getRandom())
+		// let nextPiece = Pieces.getRandom()
+		let nextPiece = { pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }
+		setNextPiece(nextPiece)
 	}
 
 	useInterval(() => {
@@ -199,10 +201,12 @@ export default function useLoop() {
 			rowsToClear.forEach(r => { newField.unshift(new Array<number>(width).fill(0)) });
 			setField(newField)
 			setFullLinesCounter(fullLinesCounter + rowsToClear.length)
-			setScore(score + 1)
+			let newScore = score + level * rowsToClear.length
+			setScore(score + level * rowsToClear.length)
+			setLevel(Math.floor(newScore / 10) + 1)
 		}
 	}
 
-	return { field, nextPiece, fullLinesCounter, isPaused, score }
+	return { field, nextPiece, fullLinesCounter, isPaused, score, level }
 }
 

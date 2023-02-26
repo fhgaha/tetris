@@ -8,7 +8,7 @@ import { useInterval } from "usehooks-ts"
 import st from "./game.module.css";
 
 const Game = () => {
-	const { field, nextPiece, fullLinesCounter, isPaused, score } = useLoop()
+	const { field, nextPiece, fullLinesCounter, isPaused, score, level } = useLoop()
 	const [time, setTime] = useState(new Date(0))
 
 	useInterval(() => {
@@ -21,7 +21,7 @@ const Game = () => {
 
 	return (
 		<div className={st.game}>
-			<Info info={fullLinesCounter} time={time} score={score}/>
+			<Info info={fullLinesCounter} time={time} score={score} level={level}/>
 			<Field field={field} />
 			<NextPiece {...nextPiece} />
 		</div>
