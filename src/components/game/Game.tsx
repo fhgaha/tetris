@@ -21,7 +21,7 @@ const Game = () => {
 
 	return (
 		<div className={st.game}>
-			<Info info={fullLinesCounter} time={time} score={score} level={level}/>
+			<Info info={fullLinesCounter} time={time} isPaused={isPaused} score={score} level={level}/>
 			<Field field={field} />
 			<NextPiece {...nextPiece} />
 		</div>
