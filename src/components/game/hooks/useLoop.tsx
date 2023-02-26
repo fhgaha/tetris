@@ -32,7 +32,7 @@ export default function useLoop() {
 	useEffect(() => {
 		// fillCell(10, 5)
 		addPiece(Pieces.getRandom(), 3)
-		// addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
+		// addPiece({ pieceType: Pieces.L.pieceType, positions: Pieces.L.positions.toPositions(3) }, 0)
 	}, [])
 
 	function addPiece(piece: PieceData, startCol: number): void {
@@ -57,10 +57,9 @@ export default function useLoop() {
 
 	function canRotate(): boolean {
 		let rotated = Pieces.rotate(currentPiece)
-		let someOfRotatedPositionsAlreadyOccupied = rotated.positions.some(rp => {
-			if (rp.row >= height) return true
-			return isCellOccupied(rp.row, rp.col)
-		})
+		let someOfRotatedPositionsAlreadyOccupied = rotated.positions.some(
+			rp => rp.row >= height - 1 || isCellOccupied(rp.row, rp.col)
+		)
 		return !someOfRotatedPositionsAlreadyOccupied
 	}
 
@@ -144,16 +143,19 @@ export default function useLoop() {
 		let lowestRow = positions.filter(({ row, col }) => row == lowestRowIndex)
 		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row >= height - 1
 		if (isBottomReached) return false
+		if (positions.some(p => p.row >= height - 1)) return false
 
 		let nextCellIsTakenAndDoesNotBelongToCur
 			= positions.some(({ row, col }) =>
-				cellBelowIsOccupied(row, col) && !someCellsBelowBelongToPositions(row, col))
+				cellBelowIsOccupied(row, col) && !someCellsBelowBelongToPositions(positions, row, col)
+			)
 		return !nextCellIsTakenAndDoesNotBelongToCur
+	}
 
-		//dry violated
-		function someCellsBelowBelongToPositions(row: number, col: number): boolean {
-			return positions.some(e => e.row == row + 1 && e.col == col)
-		}
+	//dry violated
+	function someCellsBelowBelongToPositions(
+		positions: { row: any; col: any }[], row: number, col: number): boolean {
+		return positions.some(e => e.row == row + 1 && e.col == col)
 	}
 
 	//dry violated
