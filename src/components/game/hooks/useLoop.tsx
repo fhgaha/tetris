@@ -55,16 +55,18 @@ export default function useLoop() {
 
 	function canRotate(): boolean {
 		let rotated = Pieces.rotate(currentPiece)
-		let someOfRotatedPositionsAreAlreadyOccupiedByNotCurrentPiece =
-			rotated.positions.some(
-				rp => {
-					if (rp.row >= height) return true
-					return field[rp.row][rp.col] == 1
-						&& !currentPiece.positions.some(cpp => cpp.row == rp.row && cpp.col == rp.col)
-				}
-			)
-		return !someOfRotatedPositionsAreAlreadyOccupiedByNotCurrentPiece
+		let someOfRotatedPositionsAlreadyOccupied = rotated.positions.some(rp => {
+			if (rp.row >= height) return true
+			return isCellOccupied(rp.row, rp.col)
+		})
+		return !someOfRotatedPositionsAlreadyOccupied
 	}
+
+	function isCellOccupied(row: number, col: number): boolean {
+		return field[row][col] == 1
+			&& !currentPiece.positions.some(cpp => cpp.row == row && cpp.col == col)
+	}
+
 
 	function shiftAllLeftIfNeeded(piece: PieceData): void {
 		let isRightBorderReached = piece.positions.some(({ col }) => col >= width)
@@ -138,17 +140,21 @@ export default function useLoop() {
 	function canMoveDown(positions: { row: any; col: any }[]): boolean {
 		let lowestRowIndex = Math.max(...positions.map((el: { row: any }) => el.row))
 		let lowestRow = positions.filter(({ row, col }) => row == lowestRowIndex)
-		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row == height - 1
+		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row >= height - 1
+		if (isBottomReached) return false
+
 		let nextCellIsTakenAndDoesNotBelongToCur
 			= positions.some(({ row, col }) =>
 				cellBelowIsOccupied(row, col) && !someCellsBelowBelongToPositions(row, col))
-		return !(isBottomReached || nextCellIsTakenAndDoesNotBelongToCur)
+		return !nextCellIsTakenAndDoesNotBelongToCur
 
+		//dry violated
 		function someCellsBelowBelongToPositions(row: number, col: number): boolean {
 			return positions.some(e => e.row == row + 1 && e.col == col)
 		}
 	}
 
+	//dry violated
 	function cellBelowIsOccupied(row: number, col: number): boolean {
 		return row != height - 1 && field[row + 1][col] == 1
 	}
@@ -197,5 +203,6 @@ export default function useLoop() {
 		}
 	}
 
-	return { field, nextPiece, fullLinesCounter, isPaused }
+	return { field, nextPiece, fullLinesCounter, isPaused, score }
 }
+
