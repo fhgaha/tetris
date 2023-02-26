@@ -26,14 +26,13 @@ export default function useLoop() {
 	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
 	useKeyPress('ArrowLeft', () => movePieceLeft())
 	useKeyPress('ArrowRight', () => movePieceRight())
-	useKeyPress(' ', () => setIsPaused(!isPaused)) 
+	useKeyPress(' ', () => setIsPaused(!isPaused))
 
 	useEffect(() => {
 		// fillCell(10, 5)
-		addPiece(Pieces.getRandom(), 3)
-		// addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
-		let nextPositions = Pieces.getRandom()
-		setNextPiece(nextPositions)
+		// addPiece(Pieces.getRandom(), 3)
+		addPiece({ pieceType: Pieces.L.pieceType, positions: Pieces.L.positions.toPositions(3) }, 0)
+		setNextPiece(Pieces.getRandom())
 	}, [])
 
 	function addPiece(piece: PieceData, startCol: number): void {
@@ -45,10 +44,34 @@ export default function useLoop() {
 		movePieceDown(1)
 	}, isPaused ? null : speed)
 
-	function rotatePiece() {
+	function rotatePiece(): void {
+		if (!canRotate()) return
+
 		let rotated = Pieces.rotate(currentPiece)
+		shiftAllLeftIfNeeded(rotated)
 		updateField(currentPiece.positions, 0)
 		setCurrentPiece(rotated)
+	}
+
+	function canRotate(): boolean {
+		let rotated = Pieces.rotate(currentPiece)
+		let someOfRotatedPositionsAreAlreadyOccupiedByNotCurrentPiece =
+			rotated.positions.some(
+				rp => {
+					if (rp.row >= height) return true
+					return field[rp.row][rp.col] == 1
+						&& !currentPiece.positions.some(cpp => cpp.row == rp.row && cpp.col == rp.col)
+				}
+			)
+		return !someOfRotatedPositionsAreAlreadyOccupiedByNotCurrentPiece
+	}
+
+	function shiftAllLeftIfNeeded(piece: PieceData): void {
+		let isRightBorderReached = piece.positions.some(({ col }) => col >= width)
+		if (isRightBorderReached) {
+			piece.positions.forEach(e => e.col--)
+			shiftAllLeftIfNeeded(piece)
+		}
 	}
 
 	function movePieceLeft(): void {
@@ -176,6 +199,3 @@ export default function useLoop() {
 
 	return { field, nextPiece, fullLinesCounter, isPaused }
 }
-
-
-
