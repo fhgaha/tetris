@@ -7,9 +7,9 @@ interface CRTProps {
 
 const CRT = (props: CRTProps) => {
 	return (
-		<>
+		<div className={st.crt}>
 			<img className={st['crt-frame']} src="img/crt_green_mask.png" alt="crt_green_mask.png"></img>
-			<div className={st.crt}>
+			<div className={st['crt-content']}>
 				<div id={st.filters}>
 					<svg
 						id="svg-root" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -43,7 +43,7 @@ const CRT = (props: CRTProps) => {
 				</div>
 
 			</div>
-		</>
+		</div>
 	)
 }
 

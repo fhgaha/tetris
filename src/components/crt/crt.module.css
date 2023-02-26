@@ -1,3 +1,11 @@
+.crt {
+	height: 100vh;
+	width: 100vw;
+	position: fixed;
+	left: 0;
+	top: 0;
+}
+
 .crt-frame {
 	pointer-events: none;
 	overflow: hidden;
@@ -9,12 +17,24 @@
 	background-image: radial-gradient(transparent 50%, #00000019 75%, rgba(0, 0, 0, 0.267) 95%);
 }
 
-.crt {
-	filter: url(#SphereMapTest);
+.crt-content {
 	height: 100vh;
-	position: fixed;
-	left: 0;
-	top: 0;
+	width: 100vw;
+	filter: url(#SphereMapTest);
+}
+
+.crt::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 4px 100%;
+  pointer-events: none;
 }
 
 #filters {
