@@ -57,9 +57,10 @@ export default function useLoop() {
 
 	function canRotate(): boolean {
 		let rotated = Pieces.rotate(currentPiece)
-		let someOfRotatedPositionsAlreadyOccupied = rotated.positions.some(
-			rp => rp.row >= height - 1 || isCellOccupied(rp.row, rp.col)
-		)
+		let someOfRotatedPositionsAlreadyOccupied
+			= rotated.positions.some(
+				rp => rp.row >= height - 1 || isCellOccupied(rp.row, rp.col)
+			)
 		return !someOfRotatedPositionsAlreadyOccupied
 	}
 
@@ -67,7 +68,6 @@ export default function useLoop() {
 		return field[row][col] == 1
 			&& !currentPiece.positions.some(cpp => cpp.row == row && cpp.col == col)
 	}
-
 
 	function shiftAllLeftIfNeeded(piece: PieceData): void {
 		let isRightBorderReached = piece.positions.some(({ col }) => col >= width)
@@ -134,33 +134,10 @@ export default function useLoop() {
 		}
 	}
 
-	function resetCurrent() {
-		setCurrentPiece({ pieceType: PieceTypes.I, positions: emptyPositions })
-	}
-
 	function canMoveDown(positions: { row: any; col: any }[]): boolean {
-		let lowestRowIndex = Math.max(...positions.map((el: { row: any }) => el.row))
-		let lowestRow = positions.filter(({ row, col }) => row == lowestRowIndex)
-		let isBottomReached = lowestRow.length == 0 || lowestRow[0].row >= height - 1
-		if (isBottomReached) return false
-		if (positions.some(p => p.row >= height - 1)) return false
-
-		let nextCellIsTakenAndDoesNotBelongToCur
-			= positions.some(({ row, col }) =>
-				cellBelowIsOccupied(row, col) && !someCellsBelowBelongToPositions(positions, row, col)
-			)
-		return !nextCellIsTakenAndDoesNotBelongToCur
-	}
-
-	//dry violated
-	function someCellsBelowBelongToPositions(
-		positions: { row: any; col: any }[], row: number, col: number): boolean {
-		return positions.some(e => e.row == row + 1 && e.col == col)
-	}
-
-	//dry violated
-	function cellBelowIsOccupied(row: number, col: number): boolean {
-		return row != height - 1 && field[row + 1][col] == 1
+		return !positions.some(({ row, col }) =>
+			row >= height - 1 || isCellOccupied(row + 1, col)
+		)
 	}
 
 	function fillCell(row: number, col: number): void {
