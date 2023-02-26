@@ -83,38 +83,40 @@ export default function useLoop() {
 		let canMoveLeft = !positions.some(({ row, col }) =>
 			col <= 0 || isCellOccupied(row, col - 1)
 		)
-		if (canMoveLeft) {
-			for (let j = 0; j < positions.length; j++) {
-				const e = positions[j];
-				positions[j] = { row: e.row, col: e.col - 1 }
-				emptyCell(e.row, e.col)
-			}
-			updateField(positions, 1)
-			setCurrentPiece({ ...currentPiece, positions: positions })
+		if (!canMoveLeft) return
+
+		for (let j = 0; j < positions.length; j++) {
+			const e = positions[j];
+			positions[j] = { row: e.row, col: e.col - 1 }
+			emptyCell(e.row, e.col)
 		}
+		updateField(positions, 1)
+		setCurrentPiece({ ...currentPiece, positions: positions })
 	}
 
 	function movePieceRight(): void {
 		let positions = currentPiece.positions
-		let mostRightColIndex = Math.max(...positions.map(el => el.col))
-		let mostRightCol = positions.filter(({ row, col }) => col == mostRightColIndex)
-		let isWallReached = mostRightCol.length == 0 || mostRightCol[0].col == width - 1
-		let cellToRightIsTaken = mostRightCol.some(({ row, col }) => field[row][col + 1] == 1)
-		let smthOnRight = isWallReached || cellToRightIsTaken
-		if (!smthOnRight) {
-			for (let j = 0; j < positions.length; j++) {
-				const e = positions[j];
-				positions[j] = { row: e.row, col: e.col + 1 }
-				emptyCell(e.row, e.col)
-			}
-			updateField(positions, 1)
-			setCurrentPiece({ ...currentPiece, positions: positions })
+		let canMoveRight = !positions.some(({ row, col }) =>
+			col >= width - 1 || isCellOccupied(row, col + 1)
+		)
+		if (!canMoveRight) return
+
+		for (let j = 0; j < positions.length; j++) {
+			const e = positions[j];
+			positions[j] = { row: e.row, col: e.col + 1 }
+			emptyCell(e.row, e.col)
 		}
+		updateField(positions, 1)
+		setCurrentPiece({ ...currentPiece, positions: positions })
 	}
 
 	function movePieceDown(amount: number): void {
 		let positions = currentPiece.positions
-		if (canMoveDown(positions)) {
+		let canMoveDown = !positions.some(({ row, col }) =>
+			row >= height - 1 || isCellOccupied(row + 1, col)
+		)
+		
+		if (canMoveDown) {
 			for (let i = 0; i < positions.length; i++) {
 				let e = positions[i]
 				positions[i] = {
@@ -131,12 +133,6 @@ export default function useLoop() {
 			// addPiece(Pieces.getRandom(), 3)
 			// addPiece(Pieces.L, 3)
 		}
-	}
-
-	function canMoveDown(positions: { row: any; col: any }[]): boolean {
-		return !positions.some(({ row, col }) =>
-			row >= height - 1 || isCellOccupied(row + 1, col)
-		)
 	}
 
 	function fillCell(row: number, col: number): void {
