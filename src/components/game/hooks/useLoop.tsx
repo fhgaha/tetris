@@ -31,14 +31,14 @@ export default function useLoop() {
 
 	useEffect(() => {
 		// fillCell(10, 5)
-		// addPiece(Pieces.getRandom(), 3)
-		addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
+		addPiece(Pieces.getRandom(), 3)
+		// addPiece({ pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }, 0)
 	}, [])
 
 	function addPiece(piece: PieceData, startCol: number): void {
 		setCurrentPiece(piece)
-		// let nextPiece = Pieces.getRandom()
-		let nextPiece = { pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }
+		let nextPiece = Pieces.getRandom()
+		// let nextPiece = { pieceType: Pieces.I.pieceType, positions: Pieces.I.positions.toPositions(3) }
 		setNextPiece(nextPiece)
 	}
 
