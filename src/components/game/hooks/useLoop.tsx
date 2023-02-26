@@ -58,9 +58,10 @@ export default function useLoop() {
 	function canRotate(): boolean {
 		let rotated = Pieces.rotate(currentPiece)
 		let someOfRotatedPositionsAlreadyOccupied
-			= rotated.positions.some(
-				rp => rp.row >= height - 1 || isCellOccupied(rp.row, rp.col)
+			= rotated.positions.some(rp =>
+				rp.row >= height - 1 || isCellOccupied(rp.row, rp.col)
 			)
+
 		return !someOfRotatedPositionsAlreadyOccupied
 	}
 
@@ -79,12 +80,10 @@ export default function useLoop() {
 
 	function movePieceLeft(): void {
 		let positions = currentPiece.positions
-		let mostLeftColIndex = Math.min(...positions.map(el => el.col))
-		let mostLeftCol = positions.filter(({ row, col }) => col == mostLeftColIndex)
-		let isWallReached = mostLeftCol.length == 0 || mostLeftCol[0].col == 0
-		let cellToLeftIsTaken = mostLeftCol.some(({ row, col }) => field[row][col - 1] == 1)
-		let smthOnLeft = isWallReached || cellToLeftIsTaken
-		if (!smthOnLeft) {
+		let canMoveLeft = !positions.some(({ row, col }) =>
+			col <= 0 || isCellOccupied(row, col - 1)
+		)
+		if (canMoveLeft) {
 			for (let j = 0; j < positions.length; j++) {
 				const e = positions[j];
 				positions[j] = { row: e.row, col: e.col - 1 }
