@@ -20,18 +20,35 @@
 	--container-width-lg: 75%;
 	--container-width-md: 86%;
 	--container-width-sm: 90%;
+
+	--shadow: 1.231056963361899px 0 1px rgba(0, 30, 255, 0.114), -1.231056963361899px 0 1px rgba(255, 0, 81, 0.151), 0 0 3px;
 }
 
 body {
-	font-family: Courier, monospace;
+	font-family: Inconsolata, monospace;
 	font-size: 20px;
 	background: var(--color-bg);
 	color: var(--color-primary);
 	line-height: 1.7;
+	text-shadow: var(--shadow);
 }
 
 ::-webkit-scrollbar {
 	display: none;
+}
+
+h1 {
+	font-weight: 300;
+}
+
+button {
+	font-size: large;
+	cursor: pointer;
+	background-color: transparent;
+	color: var(--color-primary);
+	padding: 2rem;
+	border: 1px solid var(--color-primary);
+	box-shadow: var(--shadow);	
 }
 
 /* ======================= MEDIA QUERIES (MEDIUM DEVICES) ======================= */
