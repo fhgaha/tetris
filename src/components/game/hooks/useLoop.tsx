@@ -14,6 +14,7 @@ const speedSlow = 500, speedFast = 100
 
 export default function useLoop() {
 	const [isPaused, setIsPaused] = useState(false)
+	const [isGameOver, setIsGameOver] = useState(false)
 	const [field, setField] = useState<number[][]>(emptyField)
 	const [currentPiece, setCurrentPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
 	const [nextPiece, setNextPiece] = useState({ pieceType: PieceTypes.I, positions: emptyPositions })
@@ -23,11 +24,11 @@ export default function useLoop() {
 	const [level, setLevel] = useState(1)
 
 	//event.key
-	useKeyPress('ArrowUp', () => rotatePiece())
-	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow))
-	useKeyPress('ArrowLeft', () => movePieceLeft())
-	useKeyPress('ArrowRight', () => movePieceRight())
-	useKeyPress(' ', () => setIsPaused(!isPaused))
+	useKeyPress('ArrowUp', () => rotatePiece(), () => { }, isPaused || isGameOver)
+	useKeyPress('ArrowDown', () => setSpeed(speedFast), () => setSpeed(speedSlow), isPaused || isGameOver)
+	useKeyPress('ArrowLeft', () => movePieceLeft(), () => { }, isPaused || isGameOver)
+	useKeyPress('ArrowRight', () => movePieceRight(), () => { }, isPaused || isGameOver)
+	useKeyPress(' ', () => setIsPaused(!isPaused), () => { }, isGameOver)
 
 	useEffect(() => {
 		// fillCell(10, 5)
@@ -43,8 +44,10 @@ export default function useLoop() {
 	}
 
 	useInterval(() => {
+		if (isGameOver) return
+
 		movePieceDown(1)
-	}, isPaused ? null : speed)
+	}, isPaused || isGameOver ? null : speed)
 
 	function rotatePiece(): void {
 		if (!canRotate()) return
@@ -115,7 +118,7 @@ export default function useLoop() {
 		let canMoveDown = !positions.some(({ row, col }) =>
 			row >= height - 1 || isCellOccupied(row + 1, col)
 		)
-		
+
 		if (canMoveDown) {
 			for (let i = 0; i < positions.length; i++) {
 				let e = positions[i]
@@ -128,6 +131,7 @@ export default function useLoop() {
 			updateField(positions, 1)
 			setCurrentPiece({ ...currentPiece, positions: positions })
 		} else {
+			checkGameOver()
 			checkFilledRow()
 			addPiece(nextPiece, 0)
 			// addPiece(Pieces.getRandom(), 3)
@@ -156,7 +160,7 @@ export default function useLoop() {
 			const newF = [...field]
 			array.forEach(e => {
 				newF[e.row][e.col] = value
-			});
+			})
 			return newF
 		})
 	}
@@ -181,6 +185,12 @@ export default function useLoop() {
 		}
 	}
 
-	return { field, nextPiece, fullLinesCounter, isPaused, score, level }
+	function checkGameOver() {
+		if (field[1].some(n => n == 1)) {
+			setIsGameOver(true)
+		}
+	}
+
+	return { field, nextPiece, fullLinesCounter, isPaused, score, level, isGameOver }
 }
 

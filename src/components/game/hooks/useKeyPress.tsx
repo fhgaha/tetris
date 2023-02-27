@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 
-export function useKeyPress(targetKey: string, onPressDown = () => { }, onPressUp = () => { }) {
+export function useKeyPress(targetKey: string, onPressDown = () => { }, onPressUp = () => { }, 
+  shouldHalt: boolean = false) {
   // State for keeping track of whether key is pressed
   const [keyPressed, setKeyPressed] = useState(false);
 
   useEffect(() => {
+    if (shouldHalt) return
+
     // If pressed key is our target key then set to true
     function downHandler({ key }: { key: string }) {
       if (key === targetKey) {

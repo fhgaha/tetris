@@ -8,9 +8,11 @@ interface InfoProps {
 	isPaused: boolean,
 	score: number,
 	level: number,
+	isGameOver: boolean,
 }
 
-const Info: FC<InfoProps> = ({ info: fullLinesCounter, time: time, isPaused: isPaused, score: score, level: level }) => {
+const Info: FC<InfoProps> = ({ 
+	info: fullLinesCounter, time: time, isPaused: isPaused, score: score, level: level, isGameOver: isGameOver }) => {
 	return (
 		<div className={st["info-container"]}>
 			<div> FULL LINES: {fullLinesCounter}</div>
@@ -23,6 +25,7 @@ const Info: FC<InfoProps> = ({ info: fullLinesCounter, time: time, isPaused: isP
 			</div>
 			<br />
 			<div>{isPaused ? 'GAME IS PAUSED' : ''}</div>
+			<div>{isGameOver ? 'GAME OVER' : ''}</div>
 		</div>
 	)
 }
